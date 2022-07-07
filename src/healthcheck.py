@@ -30,7 +30,7 @@ def is_timestamp_valid(timestamp: float) -> bool:
     """
     Check if a timestamp is valid
     """
-    return time.time() - timestamp < HEALTHCHECK_FAILURE_THRESHHOLD_MINUTES * 60
+    return (time.time() - timestamp < HEALTHCHECK_FAILURE_THRESHHOLD_MINUTES * 60)
 
 
 def healthcheck() -> None:
@@ -42,6 +42,7 @@ def healthcheck() -> None:
     else:
         exit(1)
 
-#only run if main
+
+# only run if main
 if __name__ == '__main__':
     healthcheck()
