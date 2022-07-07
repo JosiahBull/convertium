@@ -1,4 +1,6 @@
 *.json
 *.mkv
 *.mp4
+*.log
 src/__pycache__/
+healthcheck

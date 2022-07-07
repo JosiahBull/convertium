@@ -19,14 +19,15 @@ python ./src/convertium.py
 
 ## Usage
 ```bash
+# add volumes for all content you want to scan, along with other relevant options
+nano docker-compose.yml
+# tell program to scan those volumes
+nano config/general.toml
+# begin scanning
 docker-compose up -d
 ```
 
 ## Remaining Project Goals
-- [ ] improve logging (timestamps + log to file)
-- [x] improve configuration options for ffmpeg
-- [x] setup docker, and deployment scripts
-- [x] add healthcheck
 - [ ] test suite
 - [ ] build web dashboard
 

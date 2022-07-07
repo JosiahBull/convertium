@@ -129,6 +129,12 @@ def main():
         logging.error('Sleep time is not set in config')
         exit(1)
 
+    log_file: str = config.get('log_file')
+
+    if log_file is None:
+        logging.error('No log file specified in config')
+        exit(1)
+
     # Load ffmpeg config
     ffmpeg_args: list[str] = config.get('ffmpeg_arguments')
 
@@ -137,7 +143,17 @@ def main():
         exit(1)
 
     # Set up logging
-    logging.basicConfig(level=log_level)
+    logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
+    rootLogger = logging.getLogger()
+
+    fileHandler = logging.FileHandler(filename=log_file, mode='a+')
+    fileHandler.setFormatter(logFormatter)
+    rootLogger.addHandler(fileHandler)
+
+    consoleHandler = logging.StreamHandler()
+    consoleHandler.setFormatter(logFormatter)
+    rootLogger.addHandler(consoleHandler)
+    rootLogger.setLevel(log_level)
 
     # create database
     db = database.Database()
