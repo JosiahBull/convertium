@@ -169,7 +169,7 @@ def main():
             int(sleep_time / 60)))
 
         # wait for sleep_time but ping healthcheck every now and then
-        for i in range(int(sleep_time / 5)):
+        for _ in range(int(sleep_time / 5)):
             healthcheck.ping()
             sleep(5)
 

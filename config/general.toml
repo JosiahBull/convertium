@@ -3,7 +3,7 @@
 # the default is INFO.
 log_level='INFO'
 # How often the program should check for new files to convert, in minutes
-check_interval_minutes=1
+check_interval_minutes=20
 # The path to the directory where the files to convert are located.
 base_paths=['/movies', '/tv']
 # Valid file extensions to attempt conversion of

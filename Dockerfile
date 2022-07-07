@@ -12,6 +12,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD "python ./src/healthcheck.py"
+HEALTHCHECK --start-period=5s CMD ["python", "./src/healthcheck.py"]
 
 CMD [ "python", "./src/convertium.py" ]
