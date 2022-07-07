@@ -1,3 +1,5 @@
+import healthcheck
+import database
 import subprocess
 import os
 import shutil
@@ -6,9 +8,9 @@ from time import sleep
 import time
 from psutil import Popen
 import toml
-import database
 import signal
 import tempfile
+
 
 def handler(_signum: int, _frame) -> None:
     """
@@ -20,6 +22,7 @@ def handler(_signum: int, _frame) -> None:
     logging.info('Exiting')
     exit(0)
 
+
 def convert(path: str, ffmpeg_args: list[str]) -> None:
     """
     Convert a video to a mp4 file.
@@ -30,30 +33,48 @@ def convert(path: str, ffmpeg_args: list[str]) -> None:
     # create a temporary file
     with tempfile.NamedTemporaryFile(mode="w+", delete=False, suffix='.mp4', ) as tmp_f:
         try:
+            logging.debug('Converting {} to {}'.format(path, tmp_f.name))
+
             # perform replacements on ffmpeg arguments
-            ffmpeg_args = [arg.replace('%INPUT_FILE%', path, 1) for arg in ffmpeg_args]
-            ffmpeg_args = [arg.replace('%OUTPUT_NAME%', tmp_f.name, 1) for arg in ffmpeg_args]
+            ffmpeg_args = [arg.replace('%INPUT_FILE%', path, 1)
+                           for arg in ffmpeg_args]
+            ffmpeg_args = [arg.replace('%OUTPUT_NAME%', tmp_f.name, 1)
+                           for arg in ffmpeg_args]
 
             # Create a ffmpeg subprocess to encode the video
+            logging.debug('ffmpeg arguments: {}'.format(ffmpeg_args))
+            logging.debug('starting ffmpeg process')
             process_handle = subprocess.Popen(ffmpeg_args)
 
             # wait for file to finish converting
-            process_handle.wait()
+            logging.debug('waiting for process to complete')
+            while process_handle.poll() is None:
+                sleep(5)
+                healthcheck.ping()
+
             process_handle = None
 
             # Remove the original video
+            logging.debug('removing original video')
             os.remove(path)
 
             # change extension on path variable to .mp4
+            logging.debug('renaming output file')
             base = os.path.splitext(path)[0]
 
             # move the file
-            logging.info("trying to move")
             shutil.move(tmp_f.name, base + '.mp4')
+        except Exception as e:
+            logging.exception('Error converting {}: {}'.format(path, e))
+            if process_handle is not None:
+                process_handle.terminate()
+            raise e
         finally:
             # delete the temporary file, if it still exists
             if os.path.exists(tmp_f.name):
+                logging.debug('removing temporary file that still remains')
                 os.remove(tmp_f.name)
+
 
 def generate_scan_list(base_path: str, valid_extensions: list[str]) -> list[str]:
     """
@@ -66,9 +87,11 @@ def generate_scan_list(base_path: str, valid_extensions: list[str]) -> list[str]
             file_list.append(os.path.join(root, file))
 
     # Filter out files that don't have the correct extension
-    file_list: list[str] = [file for file in file_list if os.path.splitext(file)[1].lower() in valid_extensions]
+    file_list: list[str] = [file for file in file_list if os.path.splitext(file)[
+        1].lower() in valid_extensions]
 
     return file_list
+
 
 def main():
     """
@@ -123,28 +146,33 @@ def main():
     while True:
         start_time = time.time()
         for base_path in base_paths:
+            # ping healthcheck
+            healthcheck.ping()
+
             logging.info('Checking base path: {}'.format(base_path))
             # collect file list
-            file_list: list[str] = generate_scan_list(base_path, valid_extensions)
+            file_list: list[str] = generate_scan_list(
+                base_path, valid_extensions)
 
             # filter files for those which do not require conversion
-            file_list: list[str] = [file for file in file_list if not db.contains(file)]
+            file_list: list[str] = [
+                file for file in file_list if not db.contains(file)]
 
             # convert files
             for file in file_list:
-                try:
-                    logging.info('Converting {}'.format(file))
-                    convert(file, ffmpeg_args)
-                    db.add(file)
-                except Exception as e:
-                    logging.error('Error converting {}: {}'.format(file, e))
-                    if process_handle is not None:
-                        process_handle.terminate()
-                finally:
-                    logging.info('Completed conversion for {}'.format(file))
+                logging.info('Converting {}'.format(file))
+                convert(file, ffmpeg_args)
+                db.add(file)
+                logging.info('Completed conversion for {}'.format(file))
         logging.info('Completed in %.2f seconds' % (time.time() - start_time))
-        logging.info('Sleeping for {} minutes before scanning again'.format(int(sleep_time / 60)))
-        sleep(sleep_time)
+        logging.info('Sleeping for {} minutes before scanning again'.format(
+            int(sleep_time / 60)))
+
+        # wait for sleep_time but ping healthcheck every now and then
+        for i in range(int(sleep_time / 5)):
+            healthcheck.ping()
+            sleep(5)
+
 
 process_handle: Popen = None
 

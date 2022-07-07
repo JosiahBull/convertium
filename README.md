@@ -26,7 +26,7 @@ docker-compose up -d
 - [ ] improve logging (timestamps + log to file)
 - [x] improve configuration options for ffmpeg
 - [x] setup docker, and deployment scripts
-- [ ] add healthcheck
+- [x] add healthcheck
 - [ ] test suite
 - [ ] build web dashboard
 

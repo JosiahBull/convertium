@@ -5,9 +5,9 @@ log_level='INFO'
 # How often the program should check for new files to convert, in minutes
 check_interval_minutes=1
 # The path to the directory where the files to convert are located.
-base_paths=['/movies']
+base_paths=['/movies', '/tv']
 # Valid file extensions to attempt conversion of
 valid_extensions=['.mp4', '.mkv', '.avi', '.mov', '.wmv', '.mpg', '.mpeg']
 # Arguments to pass to ffmpeg, note that %INPUT_FILE% and %OUTPUT_FILE% are static, and should remain
 # as they are, though their position may be altered.
-ffmpeg_arguments = ['ffmpeg', '-i', '%INPUT_FILE%', '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '20', '-c:a', 'mp3', '-b:a', '160k', '-vf', 'format=yuv420p', '-vf', 'scale=1920:1080', '-movflags', '+faststart', '-loglevel', 'error', '-y', '%OUTPUT_NAME%']
+ffmpeg_arguments = ['ffmpeg', '-i', '%INPUT_FILE%', '-c:v', 'libx264', '-preset', 'slow', '-crf', '20', '-c:a', 'mp3', '-b:a', '160k', '-vf', 'format=yuv420p', '-vf', 'scale=1920:1080', '-movflags', '+faststart', '-loglevel', 'error', '-y', '%OUTPUT_NAME%']

@@ -3,12 +3,12 @@ services:
   convertium:
     container_name: convertium
     build: .
-    ports:
-      - "6787:80"
+    # ports:
+      # - "6787:80"
     volumes:
       - './data:/data'
-      - '/home/josiah/Downloads/Season 01:/movies'
-      # - '/media/storage/public/PlexMedia/tv:/tv'
+      - '/media/movies:/movies'
+      - '/media/tv:/tv'
     environment:
       - TIMEZONE="Pacific/Auckland"
       # - WEBHOOK_ERROR_URL="https://example.com/"
