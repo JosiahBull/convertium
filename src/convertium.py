@@ -10,8 +10,6 @@ import database
 import signal
 import tempfile
 
-process_handle: Popen = None
-
 def handler(_signum: int, _frame) -> None:
     """
     Signal handler
@@ -30,26 +28,32 @@ def convert(path: str, ffmpeg_args: list[str]) -> None:
     global process_handle
 
     # create a temporary file
-    with tempfile.NamedTemporaryFile(mode="w+", delete=True, suffix='.mp4', ) as tmp_f:
-        # perform replacements on ffmpeg arguments
-        ffmpeg_args = [arg.replace('%INPUT_FILE%', path, 1) for arg in ffmpeg_args]
-        ffmpeg_args = [arg.replace('%OUTPUT_NAME%', tmp_f.name, 1) for arg in ffmpeg_args]
+    with tempfile.NamedTemporaryFile(mode="w+", delete=False, suffix='.mp4', ) as tmp_f:
+        try:
+            # perform replacements on ffmpeg arguments
+            ffmpeg_args = [arg.replace('%INPUT_FILE%', path, 1) for arg in ffmpeg_args]
+            ffmpeg_args = [arg.replace('%OUTPUT_NAME%', tmp_f.name, 1) for arg in ffmpeg_args]
 
-        # Create a ffmpeg subprocess to encode the video
-        process_handle = subprocess.Popen(ffmpeg_args)
+            # Create a ffmpeg subprocess to encode the video
+            process_handle = subprocess.Popen(ffmpeg_args)
 
-        # wait for file to finish converting
-        process_handle.wait()
-        process_handle = None
+            # wait for file to finish converting
+            process_handle.wait()
+            process_handle = None
 
-        # Remove the original video
-        # os.remove(path)
+            # Remove the original video
+            os.remove(path)
 
-        # change extension on path variable to .mp4
-        base = os.path.splitext(path)[0]
+            # change extension on path variable to .mp4
+            base = os.path.splitext(path)[0]
 
-        # move the file
-        shutil.move(tmp_f.name, base + '.mp4')
+            # move the file
+            logging.info("trying to move")
+            shutil.move(tmp_f.name, base + '.mp4')
+        finally:
+            # delete the temporary file, if it still exists
+            if os.path.exists(tmp_f.name):
+                os.remove(tmp_f.name)
 
 def generate_scan_list(base_path: str, valid_extensions: list[str]) -> list[str]:
     """
@@ -96,7 +100,7 @@ def main():
         logging.error('No base paths specified in config')
         exit(1)
 
-    sleep_time: int = config.get('check_interval_minutes') * 60 * 1000
+    sleep_time: int = config.get('check_interval_minutes') * 60
 
     if sleep_time is None:
         logging.error('Sleep time is not set in config')
@@ -119,6 +123,7 @@ def main():
     while True:
         start_time = time.time()
         for base_path in base_paths:
+            logging.info('Checking base path: {}'.format(base_path))
             # collect file list
             file_list: list[str] = generate_scan_list(base_path, valid_extensions)
 
@@ -137,8 +142,10 @@ def main():
                         process_handle.terminate()
                 finally:
                     logging.info('Completed conversion for {}'.format(file))
-        logging.info('Completed in {}'.format(time.time() - start_time))
-        logging.info('Sleeping for {} minutes before scanning again'.format(int(sleep_time / 1000 / 60)))
+        logging.info('Completed in %.2f seconds' % (time.time() - start_time))
+        logging.info('Sleeping for {} minutes before scanning again'.format(int(sleep_time / 60)))
         sleep(sleep_time)
+
+process_handle: Popen = None
 
 main()
