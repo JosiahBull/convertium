@@ -2,7 +2,7 @@ version: "3.9"
 services:
   convertium:
     container_name: convertium
-    build: .
+    image: josiahbull/convertium:latest
     # ports:
       # - "6787:80"
     volumes:

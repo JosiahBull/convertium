@@ -11,14 +11,10 @@ resolution = 1920x1080
 
 These options, along with many others are configurable in [`config/general.toml`](config/general.toml).
 
-## Development
-```bash
-pip install -r requirements.txt
-python ./src/convertium.py
-```
-
 ## Usage
 ```bash
+git clone https://github.com/JosiahBull/bobarr-convertium/
+cd bobarr-convertuim
 # add volumes for all content you want to scan, along with other relevant options
 nano docker-compose.yml
 # tell program to scan those volumes
@@ -27,9 +23,11 @@ nano config/general.toml
 docker-compose up -d
 ```
 
-## Remaining Project Goals
-- [ ] test suite
-- [ ] build web dashboard
+## Development
+```bash
+pip install -r requirements.txt
+python ./src/convertium.py
+```
 
 ## Sister Projects
 - [Bobarr-Renameium](https://github.com/JosiahBull/bobarr-renameium) - Rename files according to easily customizable and configurable standards.
