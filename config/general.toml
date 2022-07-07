@@ -2,7 +2,6 @@
 # valid values are: DEBUG, INFO, WARNING, ERROR, CRITICAL
 # the default is INFO.
 log_level='INFO'
-log_file='./log/convertium.log'
 # How often the program should check for new files to convert, in minutes
 check_interval_minutes=20
 # The path to the directory where the files to convert are located.

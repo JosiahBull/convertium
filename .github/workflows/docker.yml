@@ -1,4 +1,4 @@
-name: ci
+name: docker
 
 on:
   push:
@@ -26,4 +26,4 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: user/app:latest
+          tags: josiahbull/convertium:latest
