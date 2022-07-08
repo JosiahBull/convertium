@@ -1,9 +1,9 @@
 version: "3.9"
 services:
   convertium:
-    # restart: unless-stopped
+    restart: unless-stopped
     image: ghcr.io/josiahbull/convertium:main
-    build: .
+    # build: .
     volumes:
       - '/media/movies:/movies'
       - '/media/tv:/tv'
