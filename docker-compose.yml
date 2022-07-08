@@ -1,42 +1,37 @@
 version: "3.9"
 services:
   convertium:
-    restart: unless-stopped
-    # image: ghcr.io/josiahbull/convertium:main
+    # restart: unless-stopped
+    image: ghcr.io/josiahbull/convertium:main
     build: .
-    # ports:
-      # - "6787:80"
     volumes:
-      - './data:/data'
-      - '/home/josiah/Downloads/Season 01:/movies'
+      - '/media/movies:/movies'
       - '/media/tv:/tv'
     environment:
-      - TIMEZONE="Pacific/Auckland"
+      - TIMEZONE=Pacific/Auckland
       # DEBUG, INFO, WARN, ERROR, CRITICAL
-      - LOG_LEVEL="INFO"
+      - LOG_LEVEL=INFO
       # number of minutes between scans
-      - SCAN_INTERVAL="20"
+      - SCAN_INTERVAL=20
       # comma separated list of paths to scan
-      - BASE_PATHS="/movies,/tv"
+      - BASE_PATHS=/movies,/tv
       # comma separated list of extensions to attempt conversions on
-      - VALID_EXTENSIONS=".mp4,.mkv,.avi,.mov,.wmv,.mpg,.mpeg"
+      - VALID_EXTENSIONS=.mp4,.mkv,.avi,.mov,.wmv,.mpg,.mpeg
       # comma seperated list of ffmpeg arguments to pass when converting
       #TODO: create presets
-      - FFMPEG_ARGUMENTS="-c:v,libx264,-crf,20,-preset,slow,-c:a,mp3,-b:a,192k,-vf,scale=1920:1080,-movflags,+faststart,-loglevel,error,-y"
+      - FFMPEG_ARGUMENTS=-c:v,libx264,-crf,20,-preset,slow,-c:a,mp3,-b:a,192k,-vf,scale=1920:1080,-movflags,+faststart,-loglevel,error,-y
+    depends_on:
+      - postgres
 
-      # - POSTGRES_USER=convertium
-      # - POSTGRES_PASSWORD=convertium
-      # - POSTGRES_DB=convertium
-
-  # postrges:
-  #   restart: unless-stopped
-  #   image: postgres
-  #   volumes:
-  #     - './data:/var/lib/postgresql/data'
-  #   environment:
-  #     - POSTGRES_USER=convertium
-  #     - POSTGRES_PASSWORD=convertium
-  #     - POSTGRES_DB=convertium
+  postgres:
+    restart: unless-stopped
+    image: postgres
+    volumes:
+      - './data:/var/lib/postgresql/data'
+    environment:
+      - POSTGRES_USER=convertium
+      - POSTGRES_PASSWORD=convertium
+      - POSTGRES_DB=convertium
 
   autoheal:
     restart: unless-stopped
@@ -45,3 +40,6 @@ services:
       - AUTOHEAL_CONTAINER_LABEL=all
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - convertium
+      - postgres

@@ -23,44 +23,55 @@ def convert(path: str, ffmpeg_args: list[str]) -> None:
     global process_handle
 
     # create a temporary file
-    with NamedTemporaryFile(mode="w+", delete=False, suffix='.mp4', ) as tmp_f:
+    with NamedTemporaryFile(
+        mode="w+",
+        delete=False,
+        suffix=".mp4",
+    ) as tmp_f:
         try:
-            logging.debug('Converting {} to {}'.format(path, tmp_f.name))
+            logging.debug("Converting {} to {}".format(path, tmp_f.name))
 
             # perform replacements on ffmpeg arguments
-            ffmpeg_args = '-i {} {} {}'.format(path, ffmpeg_args.join(' '), tmp_f.name)
+            ffmpeg_args.insert(0, path)
+            ffmpeg_args.insert(0, "-i")
+            ffmpeg_args.insert(0, "ffmpeg")
+            ffmpeg_args.append(tmp_f.name)
 
             # Create a ffmpeg subprocess to encode the video
-            logging.debug('ffmpeg arguments: {}'.format(ffmpeg_args))
-            logging.debug('starting ffmpeg process')
+            logging.debug("ffmpeg arguments: {}".format(ffmpeg_args))
+            logging.debug("starting ffmpeg process")
             process_handle = Popen(ffmpeg_args)
 
             # wait for file to finish converting
-            logging.debug('waiting for process to complete')
+            logging.debug("waiting for process to complete")
             while process_handle.poll() is None:
                 sleep(5)
                 healthcheck.ping()
 
             # check that process succeeded
             if process_handle.returncode != 0:
-                raise Exception('ffmpeg process failed with return code {}'.format(process_handle.returncode))
+                raise Exception(
+                    "ffmpeg process failed with return code {}".format(
+                        process_handle.returncode
+                    )
+                )
 
             # Remove the original video
-            logging.debug('removing original video')
+            logging.debug("removing original video")
             os.remove(path)
 
             # change extension on path variable to .mp4
-            logging.debug('renaming output file')
+            logging.debug("renaming output file")
             base = os.path.splitext(path)[0]
 
             # move the file
-            move(tmp_f.name, base + '.mp4')
+            move(tmp_f.name, base + ".mp4")
         except Exception as e:
-            logging.exception('Error converting {}: {}'.format(path, e))
+            logging.exception("Error converting {}: {}".format(path, e))
         finally:
             # delete the temporary file, if it still exists
             if os.path.exists(tmp_f.name):
-                logging.debug('removing temporary file that still remains')
+                logging.debug("removing temporary file that still remains")
                 os.remove(tmp_f.name)
 
             if process_handle is not None and process_handle.poll() is not None:

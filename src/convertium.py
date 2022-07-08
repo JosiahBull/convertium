@@ -17,7 +17,7 @@ def handler(_signum: int, _frame) -> None:
     global process_handle
     if process_handle is not None:
         process_handle.terminate()
-    logging.info('Exiting')
+    logging.info("Exiting")
     exit(0)
 
 
@@ -32,8 +32,11 @@ def generate_scan_list(base_path: str, valid_extensions: list[str]) -> list[str]
             file_list.append(os.path.join(root, file))
 
     # Filter out files that don't have the correct extension
-    file_list: list[str] = [file for file in file_list if os.path.splitext(file)[
-        1].lower() in valid_extensions]
+    file_list: list[str] = [
+        file
+        for file in file_list
+        if os.path.splitext(file)[1].lower() in valid_extensions
+    ]
 
     return file_list
 
@@ -47,7 +50,9 @@ def main():
     signal.signal(signal.SIGTERM, handler)
 
     # Set up logging
-    logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
+    logFormatter = logging.Formatter(
+        "%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s"
+    )
     rootLogger = logging.getLogger()
 
     consoleHandler = logging.StreamHandler()
@@ -71,24 +76,25 @@ def main():
             # ping healthcheck
             healthcheck.ping()
 
-            logging.info('Checking base path: {}'.format(base_path))
+            logging.info("Checking base path: {}".format(base_path))
             # collect file list
             file_list: list[str] = generate_scan_list(
-                base_path, env_vars.valid_extensions)
+                base_path, env_vars.valid_extensions
+            )
 
             # filter files for those which do not require conversion
-            file_list: list[str] = [
-                file for file in file_list if not db.contains(file)]
+            file_list: list[str] = [file for file in file_list if not db.contains(file)]
 
             # convert files
             for file in file_list:
-                logging.info('Converting {}'.format(file))
-                ffmpeg.convert(file, env_vars.ffmpeg_args)
+                logging.info("Converting {}".format(file))
+                ffmpeg.convert(file, env_vars.ffmpeg_args.copy())
                 db.add(file)
-                logging.info('Completed conversion for {}'.format(file))
-        logging.info('Completed in %.2f seconds' % (time.time() - start_time))
-        logging.info('Sleeping for {} minutes before scanning again'.format(
-            int(sleep_time / 60)))
+                logging.info("Completed conversion for {}".format(file))
+        logging.info("Completed in %.2f seconds" % (time.time() - start_time))
+        logging.info(
+            "Sleeping for {} minutes before scanning again".format(int(sleep_time / 60))
+        )
 
         # wait for sleep_time but ping healthcheck every now and then
         for _ in range(int(sleep_time / 5)):
@@ -96,6 +102,7 @@ def main():
             sleep(5)
 
 
+global process_handle
 process_handle: Popen = None
 
 main()

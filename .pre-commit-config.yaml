@@ -1,0 +1,22 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.3.0
+    hooks:
+    -   id: check-yaml
+    -   id: end-of-file-fixer
+    -   id: trailing-whitespace
+    -   id: debug-statements
+    -   id: detect-private-key
+    -   id: mixed-line-ending
+    -   id: name-tests-test
+    -   id: pretty-format-json
+    -   id: check-case-conflict
+    -   id: check-executables-have-shebangs
+-   repo: https://github.com/psf/black
+    rev: '7af77d1'
+    hooks:
+    -   id: black
+-   repo: https://github.com/pycqa/flake8
+    rev: 'bd1656c'
+    hooks:
+    -   id: flake8
