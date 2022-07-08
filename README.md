@@ -2,6 +2,7 @@
 
 ![Docker](https://github.com/JosiahBull/Convertium/actions/workflows/docker.yml/badge.svg)
 ![Lint](https://github.com/JosiahBull/Convertium/actions/workflows/lint.yml/badge.svg)
+![Test](https://github.com/JosiahBull/Convertium/actions/workflows/test.yml/badge.svg)
 
 Convertium is a simple python script which recursively looks for video files in configured directories, then automatically reformats them in a style to minimize transcoding, by maximizing compatibility with as many devices as possible. Files will be automatically reformatted to the following file format:
 ```bash

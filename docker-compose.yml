@@ -1,23 +1,35 @@
 version: "3.9"
 services:
   convertium:
-    container_name: convertium
-    # image: josiahbull/convertium:latest
+    restart: unless-stopped
+    # image: ghcr.io/josiahbull/convertium:main
     build: .
     # ports:
       # - "6787:80"
     volumes:
       - './data:/data'
-      - '/media/movies:/movies'
+      - '/home/josiah/Downloads/Season 01:/movies'
       - '/media/tv:/tv'
     environment:
       - TIMEZONE="Pacific/Auckland"
-      # - WEBHOOK_ERROR_URL="https://example.com/"
-      # - PUID=1000
-      # - PGID=1000
-    restart: unless-stopped
+      # DEBUG, INFO, WARN, ERROR, CRITICAL
+      - LOG_LEVEL="INFO"
+      # number of minutes between scans
+      - SCAN_INTERVAL="20"
+      # comma separated list of paths to scan
+      - BASE_PATHS="/movies,/tv"
+      # comma separated list of extensions to attempt conversions on
+      - VALID_EXTENSIONS=".mp4,.mkv,.avi,.mov,.wmv,.mpg,.mpeg"
+      # comma seperated list of ffmpeg arguments to pass when converting
+      #TODO: create presets
+      - FFMPEG_ARGUMENTS="-c:v,libx264,-crf,20,-preset,slow,-c:a,mp3,-b:a,192k,-vf,scale=1920:1080,-movflags,+faststart,-loglevel,error,-y"
+
+      # - POSTGRES_USER=convertium
+      # - POSTGRES_PASSWORD=convertium
+      # - POSTGRES_DB=convertium
 
   # postrges:
+  #   restart: unless-stopped
   #   image: postgres
   #   volumes:
   #     - './data:/var/lib/postgresql/data'
@@ -25,3 +37,11 @@ services:
   #     - POSTGRES_USER=convertium
   #     - POSTGRES_PASSWORD=convertium
   #     - POSTGRES_DB=convertium
+
+  autoheal:
+    restart: unless-stopped
+    image: willfarrell/autoheal
+    environment:
+      - AUTOHEAL_CONTAINER_LABEL=all
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
