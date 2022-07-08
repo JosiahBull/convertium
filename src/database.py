@@ -1,39 +1,38 @@
-import json
-import os
 import logging
-from typing import Final
-
-DATABASE_NAME: Final[str] = 'database.json'
-
-
-def load_json_database(path: str) -> dict:
-    """
-    Load a json database from a file.
-    """
-    logging.debug('Loading database from %s', path)
-    with open(path, 'r') as f:
-        return json.load(f)
+import psycopg2
 
 
 class Database:
     """
     A database of paths.
     """
-    def __init__(self) -> None:
-        # if the database file doesn't exist, create it
-        if not os.path.isfile(DATABASE_NAME):
-            self.database = {}
-            with open(DATABASE_NAME, 'w') as f:
-                json.dump(self.database, f)
-        else:
-            self.database = load_json_database(DATABASE_NAME)
+    def __init__(self):
+        logging.debug('Initializing database')
+        with psycopg2.connect(user='convertium', password='convertium', host='postgres', port=5432, dbname='convertium') as conn:
+            with conn.cursor() as curr:
+                try:
+                    curr.execute('CREATE TABLE IF NOT EXISTS paths (path TEXT PRIMARY KEY);')
+                    logging.debug('Database initialized')
+                except Exception as e:
+                    logging.exception('Could not create database {}'.format(e))
+                    exit(1)
 
     def contains(self, path: str) -> bool:
         logging.debug('Checking if %s is in database', path)
-        return path in self.database
+        with psycopg2.connect(user='convertium', password='convertium', host='postgres', port=5432, dbname='convertium') as conn:
+            with conn.cursor() as curr:
+                try:
+                    curr.execute('SELECT * FROM paths WHERE path = %s;', (path,))
+                    return curr.rowcount > 0
+                except Exception:
+                    logging.exception('Could not check if %s is in database', path)
+                    return True
 
     def add(self, path: str) -> None:
         logging.debug('Adding %s to database', path)
-        self.database[path] = True
-        with open(DATABASE_NAME, 'w') as f:
-            json.dump(self.database, f)
+        with psycopg2.connect(user='convertium', password='convertium', host='postgres', port=5432, dbname='convertium') as conn:
+            with conn.cursor() as curr:
+                try:
+                    curr.execute('INSERT INTO paths (path) VALUES (%s);', (path,))
+                except Exception:
+                    logging.exception('Could not add %s to database', path)

@@ -95,7 +95,7 @@ def main():
             healthcheck.ping()
             sleep(5)
 
-
+global process_handle
 process_handle: Popen = None
 
 main()

@@ -28,7 +28,10 @@ def convert(path: str, ffmpeg_args: list[str]) -> None:
             logging.debug('Converting {} to {}'.format(path, tmp_f.name))
 
             # perform replacements on ffmpeg arguments
-            ffmpeg_args = '-i {} {} {}'.format(path, ffmpeg_args.join(' '), tmp_f.name)
+            ffmpeg_args.insert(0, path)
+            ffmpeg_args.insert(0, '-i')
+            ffmpeg_args.insert(0, 'ffmpeg')
+            ffmpeg_args.append(tmp_f.name)
 
             # Create a ffmpeg subprocess to encode the video
             logging.debug('ffmpeg arguments: {}'.format(ffmpeg_args))
