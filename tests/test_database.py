@@ -1,3 +1,4 @@
+import os
 import unittest
 import psycopg2
 from src.database import Database
@@ -9,7 +10,7 @@ class TestDatabase(unittest.TestCase):
         with psycopg2.connect(
             user="convertium",
             password="convertium",
-            host="localhost",
+            host=os.getenv("CONVERTIUM_DB_HOST", "localhost"),
             port=5432,
             dbname="convertium_test",
         ) as conn:
@@ -20,12 +21,14 @@ class TestDatabase(unittest.TestCase):
         """
         Test adding an item to the database
         """
-        db = Database(host="localhost", dbname="convertium_test")
+        db = Database(
+            host=os.getenv("CONVERTIUM_DB_HOST", "localhost"), dbname="convertium_test"
+        )
         db.add("test_video_1.mp4")
         with psycopg2.connect(
             user="convertium",
             password="convertium",
-            host="localhost",
+            host=os.getenv("CONVERTIUM_DB_HOST", "localhost"),
             port=5432,
             dbname="convertium_test",
         ) as conn:
@@ -39,7 +42,9 @@ class TestDatabase(unittest.TestCase):
         """
         Test if an item is in the database
         """
-        db = Database(host="localhost", dbname="convertium_test")
+        db = Database(
+            host=os.getenv("CONVERTIUM_DB_HOST", "localhost"), dbname="convertium_test"
+        )
         self.assertFalse(db.contains("test_video_2.mp4"))
         db.add("test_video_2.mp4")
         self.assertTrue(db.contains("test_video_2.mp4"))
@@ -50,7 +55,7 @@ class TestDatabase(unittest.TestCase):
         with psycopg2.connect(
             user="convertium",
             password="convertium",
-            host="localhost",
+            host=os.getenv("CONVERTIUM_DB_HOST", "localhost"),
             port=5432,
             dbname="convertium_test",
         ) as conn:

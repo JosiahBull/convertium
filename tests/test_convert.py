@@ -39,7 +39,7 @@ class TestConvert(unittest.TestCase):
 
         os.environ["CONVERTIUM_DB_USER"] = "convertium"
         os.environ["CONVERTIUM_DB_PASSWORD"] = "convertium"
-        os.environ["CONVERTIUM_DB_HOST"] = "localhost"
+        os.environ["CONVERTIUM_DB_HOST"] = os.getenv("CONVERTIUM_DB_HOST", "localhost")
         os.environ["CONVERTIUM_DB_PORT"] = "5432"
         os.environ["CONVERTIUM_DB_DNNAME"] = "convertium_test"
 
@@ -47,7 +47,7 @@ class TestConvert(unittest.TestCase):
         with psycopg2.connect(
             user="convertium",
             password="convertium",
-            host="localhost",
+            host=os.getenv("CONVERTIUM_DB_HOST", "localhost"),
             port=5432,
             dbname="convertium_test",
         ) as conn:
@@ -73,7 +73,7 @@ class TestConvert(unittest.TestCase):
         with psycopg2.connect(
             user="convertium",
             password="convertium",
-            host="localhost",
+            host=os.getenv("CONVERTIUM_DB_HOST", "localhost"),
             port=5432,
             dbname="convertium_test",
         ) as conn:
