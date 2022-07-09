@@ -7,7 +7,7 @@ import src.convertium as convertium
 import timeout_decorator
 
 TEST_FOLDER_NAME: Final[str] = "./test_convert"
-TEST_TIMEOUT: Final[int] = 15
+TEST_TIMEOUT: Final[int] = 60
 
 
 class TestConvert(unittest.TestCase):

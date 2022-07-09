@@ -19,6 +19,7 @@ services:
       - VALID_EXTENSIONS=.mp4,.mkv,.avi,.mov,.wmv,.mpg,.mpeg
       # comma seperated list of ffmpeg arguments to pass when converting
       - FFMPEG_ARGUMENTS=-c:v,libx264,-crf,20,-preset,slow,-c:a,mp3,-b:a,192k,-vf,scale=1920:1080,-movflags,+faststart,-loglevel,error,-y
+      - PYTHON_ENV=production
     depends_on:
       - postgres
 

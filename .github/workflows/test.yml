@@ -8,16 +8,14 @@ jobs:
     name: Test and Coverage
 
     services:
-      # Label used to access the service container
       postgres:
-        # Docker Hub image
         image: postgres
-        # Provide the password for postgres
         env:
           POSTGRES_USER: convertium
           POSTGRES_PASSWORD: convertium
           POSTGRES_DB: convertium_test
-        # Set health checks to wait until postgres has started
+        ports:
+          - 5432:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -33,13 +31,17 @@ jobs:
         with:
           python-version: "3.10"
 
+      - name: Install and setup ffmpeg
+        run: sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get install -y ffmpeg postgresql
+
       - name: Install requirements for Tests
         run: pip install -r dev-requirements.txt
 
       - name: Run Tests
         run: python -m unittest
         env:
-          POSTGRES_HOST: postgres
+          CONVERTIUM_DB_HOST: localhost
+          PYTHON_ENV: test
 
       - name: Install requirements for coverage
         run: pip install coverage
@@ -47,7 +49,8 @@ jobs:
       - name: Generate Coverage Report
         run: coverage run --branch --context=ci --source src -m unittest && coverage report && coverage lcov -o lcov.info
         env:
-          POSTGRES_HOST: postgres
+          CONVERTIUM_DB_HOST: localhost
+          PYTHON_ENV: test
 
       - name: Upload Coverage Report
         uses: codecov/codecov-action@v3

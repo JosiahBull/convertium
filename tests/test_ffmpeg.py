@@ -6,7 +6,7 @@ import src.ffmpeg as ffmpeg
 import timeout_decorator
 
 TEST_FOLDER_NAME: Final[str] = "./test_ffmpeg"
-TEST_TIMEOUT: Final[int] = 10
+TEST_TIMEOUT: Final[int] = 60
 
 
 class TestFfmpeg(unittest.TestCase):

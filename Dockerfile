@@ -14,4 +14,7 @@ COPY . .
 
 HEALTHCHECK --start-period=5s CMD ["python", "./src/healthcheck.py"]
 
+# add production env
+ENV PYTHON_ENV production
+
 CMD [ "./scripts/wait-for-postgres.sh", "python", "./src/convertium.py" ]

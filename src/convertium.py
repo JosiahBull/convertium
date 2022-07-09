@@ -1,8 +1,16 @@
-import src.healthcheck as healthcheck
-import src.database as database
-import src.config as config
-import src.ffmpeg as ffmpeg
 import os
+
+if os.getenv("PYTHON_ENV") == "production":
+    import healthcheck
+    import database
+    import config
+    import ffmpeg
+else:
+    import src.healthcheck as healthcheck
+    import src.database as database
+    import src.config as config
+    import src.ffmpeg as ffmpeg
+
 import logging
 from time import sleep
 import time

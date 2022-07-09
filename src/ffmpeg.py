@@ -1,6 +1,10 @@
 import os
+
+if os.getenv("PYTHON_ENV") == "production":
+    import healthcheck
+else:
+    import src.healthcheck as healthcheck
 import logging
-import src.healthcheck as healthcheck
 from subprocess import Popen
 from shutil import move
 from tempfile import NamedTemporaryFile
