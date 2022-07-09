@@ -1,6 +1,6 @@
 import os
 import logging
-import healthcheck
+import src.healthcheck as healthcheck
 from subprocess import Popen
 from shutil import move
 from tempfile import NamedTemporaryFile

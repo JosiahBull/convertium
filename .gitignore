@@ -2,6 +2,9 @@
 *.mkv
 *.mp4
 *.log
-src/__pycache__/
+*/__pycache__/
 healthcheck
 data/
+test_tmp/
+.coverage
+*.info

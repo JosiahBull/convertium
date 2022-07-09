@@ -10,16 +10,20 @@ class Config:
             "VALID_EXTENSIONS", ".mp4,.mkv,.avi,.mov,.wmv,.mpg,.mpeg"
         ).split(",")
         self.scan_interval: int = int(os.getenv("SCAN_INTERVAL", "20"))
-        self.base_paths: list[str] = os.getenv("BASE_PATHS").split(",")
-        self.ffmpeg_args: list[str] = os.getenv("FFMPEG_ARGUMENTS").split(",")
+        self.base_paths: list[str] = os.getenv("BASE_PATHS")
+        self.ffmpeg_args: list[str] = os.getenv("FFMPEG_ARGUMENTS")
 
         if self.ffmpeg_args is None:
             logging.error("No ffmpeg arguments specified in config")
             exit(1)
 
+        self.ffmpeg_args = self.ffmpeg_args.split(",")
+
         if self.base_paths is None:
             logging.error("No base paths specified in config")
             exit(1)
+
+        self.base_paths = self.base_paths.split(",")
 
         # validate that the log level is valid
         if self.log_level not in ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]:

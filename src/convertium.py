@@ -1,7 +1,7 @@
-import healthcheck
-import database
-import config
-import ffmpeg
+import src.healthcheck as healthcheck
+import src.database as database
+import src.config as config
+import src.ffmpeg as ffmpeg
 import os
 import logging
 from time import sleep
@@ -41,7 +41,7 @@ def generate_scan_list(base_path: str, valid_extensions: list[str]) -> list[str]
     return file_list
 
 
-def main():
+def main(run_once=False) -> None:
     """
     Main function
     """
@@ -96,6 +96,9 @@ def main():
             "Sleeping for {} minutes before scanning again".format(int(sleep_time / 60))
         )
 
+        if run_once:
+            break
+
         # wait for sleep_time but ping healthcheck every now and then
         for _ in range(int(sleep_time / 5)):
             healthcheck.ping()
@@ -105,4 +108,5 @@ def main():
 global process_handle
 process_handle: Popen = None
 
-main()
+if __name__ == "__main__":
+    main()
