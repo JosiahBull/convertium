@@ -47,7 +47,7 @@ jobs:
         run: pip install coverage
 
       - name: Generate Coverage Report
-        run: coverage run --branch --context=ci --source src -m unittest && coverage report && coverage lcov -o lcov.info
+        run: coverage run --branch --context=ci --source src -m unittest && coverage report && coverage xml
         env:
           CONVERTIUM_DB_HOST: localhost
           PYTHON_ENV: test
@@ -56,6 +56,6 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./lcov.info
+          files: ./coverage.xml
           fail_ci_if_error: true
           verbose: true

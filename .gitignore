@@ -8,3 +8,5 @@ data/
 test_tmp/
 .coverage
 *.info
+*.xml
+codecov
