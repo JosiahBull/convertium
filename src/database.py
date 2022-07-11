@@ -52,7 +52,7 @@ class Database:
                         "CREATE TABLE IF NOT EXISTS paths (path TEXT PRIMARY KEY);"
                     )
                     logging.debug("Database initialized")
-                except Exception as e:
+                except Exception as e:  # pragma: no cover
                     logging.exception("Could not create database {}".format(e))
                     exit(1)
 
@@ -85,5 +85,5 @@ class Database:
             with conn.cursor() as curr:
                 try:
                     curr.execute("INSERT INTO paths (path) VALUES (%s);", (path,))
-                except Exception:
+                except Exception:  # pragma: no cover
                     logging.exception("Could not add %s to database", path)

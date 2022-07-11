@@ -91,6 +91,10 @@ class TestConfig(unittest.TestCase):
         with self.assertRaises(SystemExit):
             Config()
 
+        del os.environ["BASE_PATHS"]
+        with self.assertRaises(SystemExit):
+            Config()
+
         os.mkdir(TEST_FOLDER_NAME)
         os.environ["BASE_PATHS"] = TEST_FOLDER_NAME
         Config()  # XXX: can we validate that the warnign is printed?

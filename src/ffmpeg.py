@@ -1,7 +1,7 @@
 import os
 
-if os.getenv("PYTHON_ENV") == "production":
-    import healthcheck
+if os.getenv("PYTHON_ENV") == "production":  # pragma: no cover
+    import healthcheck  # pragma: no cover
 else:
     import src.healthcheck as healthcheck
 import logging
@@ -20,7 +20,7 @@ def is_conversion_eligible(file_path: str) -> bool:
     # return os.path.splitext(file_path)[1].lower() in ['.mp4', '.mov']
 
 
-def convert(path: str, ffmpeg_args: list[str]) -> None:
+def convert(path: str, ffmpeg_args: list[str], num_threads: int) -> None:
     """
     Convert a video to a mp4 file.
     """
@@ -39,6 +39,12 @@ def convert(path: str, ffmpeg_args: list[str]) -> None:
             ffmpeg_args.insert(0, path)
             ffmpeg_args.insert(0, "-i")
             ffmpeg_args.insert(0, "ffmpeg")
+
+            # add threads to ffmpeg arguments
+            if num_threads > 0:
+                ffmpeg_args.append("-threads")
+                ffmpeg_args.append(str(num_threads))
+
             ffmpeg_args.append(tmp_f.name)
 
             # Create a ffmpeg subprocess to encode the video
@@ -53,7 +59,7 @@ def convert(path: str, ffmpeg_args: list[str]) -> None:
                 healthcheck.ping()
 
             # check that process succeeded
-            if process_handle.returncode != 0:
+            if process_handle.returncode != 0:  # pragma: no cover
                 raise Exception(
                     "ffmpeg process failed with return code {}".format(
                         process_handle.returncode
@@ -70,7 +76,7 @@ def convert(path: str, ffmpeg_args: list[str]) -> None:
 
             # move the file
             move(tmp_f.name, base + ".mp4")
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             logging.exception("Error converting {}: {}".format(path, e))
         finally:
             # delete the temporary file, if it still exists

@@ -36,6 +36,9 @@ class TestConvert(unittest.TestCase):
         os.environ["BASE_PATHS"] = TEST_FOLDER_NAME
         os.environ["VALID_EXTENSIONS"] = ".mov"
         os.environ["FFMPEG_ARGUMENTS"] = "-c:v,libx264,-c:a,copy,-loglevel,error,-y"
+        os.environ[
+            "CONVERSION_TIMES"
+        ] = "00:00-01:00"  # always active with maximum threads
 
         os.environ["CONVERTIUM_DB_USER"] = "convertium"
         os.environ["CONVERTIUM_DB_PASSWORD"] = "convertium"

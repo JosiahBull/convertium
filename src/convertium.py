@@ -1,15 +1,18 @@
 import os
 
 if os.getenv("PYTHON_ENV") == "production":
-    import healthcheck
-    import database
-    import config
-    import ffmpeg
+    import healthcheck  # pragma: no cover
+    import database  # pragma: no cover
+    import config  # pragma: no cover
+    import ffmpeg  # pragma: no cover
+    import time_of_day  # pragma: no cover
 else:
     import src.healthcheck as healthcheck
     import src.database as database
     import src.config as config
     import src.ffmpeg as ffmpeg
+    import src.time_of_day as time_of_day
+
 
 import logging
 from time import sleep
@@ -77,6 +80,9 @@ def main(run_once=False) -> None:
     # create database
     db = database.Database()
 
+    # create timer
+    timer = time_of_day.TimeAndThreads(os.environ["CONVERSION_TIMES"])
+
     # For each base path, get a list of files to process then process them
     while True:
         start_time = time.time()
@@ -95,8 +101,20 @@ def main(run_once=False) -> None:
 
             # convert files
             for file in file_list:
+                if not timer.processing_enabled():
+                    logging.info("Processing is not enabled at this time")
+                    while not timer.processing_enabled():
+                        sleep(2)
+
+                # check that file exists
+                if not os.path.isfile(file):
+                    logging.error("File does not exist: {}".format(file))
+                    continue
+
                 logging.info("Converting {}".format(file))
-                ffmpeg.convert(file, env_vars.ffmpeg_args.copy())
+                ffmpeg.convert(
+                    file, env_vars.ffmpeg_args.copy(), timer.get_num_threads()
+                )
                 db.add(file)
                 logging.info("Completed conversion for {}".format(file))
         logging.info("Completed in %.2f seconds" % (time.time() - start_time))
@@ -116,5 +134,5 @@ def main(run_once=False) -> None:
 global process_handle
 process_handle: Popen = None
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     main()
