@@ -1,11 +1,11 @@
 import os
 
 if os.getenv("PYTHON_ENV") == "production":
-    import healthcheck
-    import database
-    import config
-    import ffmpeg
-    import time_of_day
+    import healthcheck  # pragma: no cover
+    import database  # pragma: no cover
+    import config  # pragma: no cover
+    import ffmpeg  # pragma: no cover
+    import time_of_day  # pragma: no cover
 else:
     import src.healthcheck as healthcheck
     import src.database as database
@@ -134,5 +134,5 @@ def main(run_once=False) -> None:
 global process_handle
 process_handle: Popen = None
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     main()

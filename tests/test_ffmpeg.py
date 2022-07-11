@@ -31,7 +31,7 @@ class TestFfmpeg(unittest.TestCase):
         ffmpeg.convert(
             TEST_FOLDER_NAME + "/test_video_1.mov",
             ["-c:v", "libx264", "-c:a", "copy", "-loglevel", "error", "-y"],
-            -1,
+            4,
         )
 
         # check for the converted file

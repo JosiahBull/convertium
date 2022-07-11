@@ -37,10 +37,6 @@ class TimeAndThreads:
         # split end_time into hours and minutes
         end_hours, end_minutes = end_time.split(":")
 
-        # validate start time is earlier than end time
-        if start_time > end_time:
-            raise ValueError("Start time is later than end time")
-
         # save config
         self.start_time = (int(start_hours), int(start_minutes))
         self.end_time = (int(end_hours), int(end_minutes))

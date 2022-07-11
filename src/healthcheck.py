@@ -44,5 +44,5 @@ def healthcheck() -> None:
 
 
 # only run if main
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     healthcheck()

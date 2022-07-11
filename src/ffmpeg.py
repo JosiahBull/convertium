@@ -1,7 +1,7 @@
 import os
 
-if os.getenv("PYTHON_ENV") == "production":
-    import healthcheck
+if os.getenv("PYTHON_ENV") == "production":  # pragma: no cover
+    import healthcheck  # pragma: no cover
 else:
     import src.healthcheck as healthcheck
 import logging
@@ -59,7 +59,7 @@ def convert(path: str, ffmpeg_args: list[str], num_threads: int) -> None:
                 healthcheck.ping()
 
             # check that process succeeded
-            if process_handle.returncode != 0:
+            if process_handle.returncode != 0:  # pragma: no cover
                 raise Exception(
                     "ffmpeg process failed with return code {}".format(
                         process_handle.returncode
@@ -76,7 +76,7 @@ def convert(path: str, ffmpeg_args: list[str], num_threads: int) -> None:
 
             # move the file
             move(tmp_f.name, base + ".mp4")
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             logging.exception("Error converting {}: {}".format(path, e))
         finally:
             # delete the temporary file, if it still exists

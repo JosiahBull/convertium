@@ -121,6 +121,27 @@ class TestTimeAndThreads(unittest.TestCase):
         self.assertEqual(num_threads, -1)
         self.assertTrue(time_and_threads.processing_enabled())
 
+    def test_failure_cases(self):
+        """
+        This function will validate that ValueErrors are returned when incorrect configurations are passed
+        """
+
+        # test that a ValueError is raised when the config is empty
+        with self.assertRaises(ValueError):
+            TimeAndThreads("")
+
+        # test that a ValueError is raised when the config has more than one -
+        with self.assertRaises(ValueError):
+            TimeAndThreads("10:00T#0-10:00T#0-")
+
+        # test that a ValueError is raised when the config has more than two T#
+        with self.assertRaises(ValueError):
+            TimeAndThreads("10:00T#0-11:00T#T#")
+
+        # test that a valueError is rasied when the config has a T# with no number
+        with self.assertRaises(ValueError):
+            TimeAndThreads("10:00T#-11:00T#0")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -62,6 +62,16 @@ class TestHealthCheck(unittest.TestCase):
             healthcheck.healthcheck()
         self.assertEqual(cm.exception.code, 0)
 
+    def test_healthcheck_with_no_file(self) -> None:
+        """
+        Test that the healthcheck function exits with 1 if the file does not exist
+        """
+        # remove any existing healthcheck file
+        if os.path.isfile("healthcheck"):
+            os.remove("healthcheck")
+        value = healthcheck.read_timestamp_from_file()
+        self.assertEqual(value, 0.0)
+
     def tearDown(self) -> None:
         # remove any existing healthcheck file
         if os.path.isfile("healthcheck"):
