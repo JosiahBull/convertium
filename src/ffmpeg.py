@@ -20,7 +20,7 @@ def is_conversion_eligible(file_path: str) -> bool:
     # return os.path.splitext(file_path)[1].lower() in ['.mp4', '.mov']
 
 
-def convert(path: str, ffmpeg_args: list[str]) -> None:
+def convert(path: str, ffmpeg_args: list[str], num_threads: int) -> None:
     """
     Convert a video to a mp4 file.
     """
@@ -39,6 +39,12 @@ def convert(path: str, ffmpeg_args: list[str]) -> None:
             ffmpeg_args.insert(0, path)
             ffmpeg_args.insert(0, "-i")
             ffmpeg_args.insert(0, "ffmpeg")
+
+            # add threads to ffmpeg arguments
+            if num_threads > 0:
+                ffmpeg_args.append("-threads")
+                ffmpeg_args.append(str(num_threads))
+
             ffmpeg_args.append(tmp_f.name)
 
             # Create a ffmpeg subprocess to encode the video

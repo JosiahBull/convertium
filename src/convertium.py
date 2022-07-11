@@ -5,11 +5,14 @@ if os.getenv("PYTHON_ENV") == "production":
     import database
     import config
     import ffmpeg
+    import time_of_day
 else:
     import src.healthcheck as healthcheck
     import src.database as database
     import src.config as config
     import src.ffmpeg as ffmpeg
+    import src.time_of_day as time_of_day
+
 
 import logging
 from time import sleep
@@ -77,6 +80,9 @@ def main(run_once=False) -> None:
     # create database
     db = database.Database()
 
+    # create timer
+    timer = time_of_day.TimeAndThreads(os.environ["CONVERSION_TIMES"])
+
     # For each base path, get a list of files to process then process them
     while True:
         start_time = time.time()
@@ -95,8 +101,20 @@ def main(run_once=False) -> None:
 
             # convert files
             for file in file_list:
+                if not timer.processing_enabled():
+                    logging.info("Processing is not enabled at this time")
+                    while not timer.processing_enabled():
+                        sleep(2)
+
+                # check that file exists
+                if not os.path.isfile(file):
+                    logging.error("File does not exist: {}".format(file))
+                    continue
+
                 logging.info("Converting {}".format(file))
-                ffmpeg.convert(file, env_vars.ffmpeg_args.copy())
+                ffmpeg.convert(
+                    file, env_vars.ffmpeg_args.copy(), timer.get_num_threads()
+                )
                 db.add(file)
                 logging.info("Completed conversion for {}".format(file))
         logging.info("Completed in %.2f seconds" % (time.time() - start_time))
