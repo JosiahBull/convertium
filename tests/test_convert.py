@@ -87,6 +87,16 @@ class TestConvert(unittest.TestCase):
                 )
                 self.assertTrue(curr.rowcount > 0)
 
+    def test_signal_handler(self):
+        """
+        Test that the signal handler works
+        """
+        # assert function exits with code 0
+
+        with self.assertRaises(SystemExit) as cm:
+            convertium.handler(0, None)
+        self.assertEqual(cm.exception.code, 0)
+
     def tearDown(self):
         """
         Clean up the environment variables for the test
