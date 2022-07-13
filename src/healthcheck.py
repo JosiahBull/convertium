@@ -5,6 +5,9 @@ from typing import Final
 HEALTHCHECK_FAILURE_THRESHHOLD_MINUTES: Final[int] = 3
 HEALTHCHECK_FILE_NAME: Final[str] = "healthcheck"
 
+# How long to wait between healthcheck pings
+HEALTHCHECK_UPDATE_SECONDS: Final[int] = 30
+
 
 def ping() -> None:
     """

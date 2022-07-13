@@ -104,7 +104,8 @@ def main(run_once=False) -> None:
                 if not timer.processing_enabled():
                     logging.info("Processing is not enabled at this time")
                     while not timer.processing_enabled():
-                        sleep(2)
+                        healthcheck.ping()
+                        sleep(healthcheck.HEALTHCHECK_UPDATE_SECONDS)
 
                 # check that file exists
                 if not os.path.isfile(file):
@@ -128,7 +129,7 @@ def main(run_once=False) -> None:
         # wait for sleep_time but ping healthcheck every now and then
         for _ in range(int(sleep_time / 5)):
             healthcheck.ping()
-            sleep(5)
+            sleep(healthcheck.HEALTHCHECK_UPDATE_TIME)
 
 
 global process_handle
