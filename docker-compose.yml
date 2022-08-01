@@ -8,7 +8,6 @@ services:
       - '/media/movies:/movies'
       - '/media/tv:/tv'
     environment:
-      - TIMEZONE=Pacific/Auckland
       # DEBUG, INFO, WARN, ERROR, CRITICAL
       - LOG_LEVEL=INFO
       # number of minutes between scans

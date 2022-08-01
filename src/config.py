@@ -4,7 +4,6 @@ import logging
 
 class Config:
     def __init__(self):
-        self.timezone: str = os.getenv("TIMEZONE", "Pacific/Auckland")
         self.log_level: str = os.getenv("LOG_LEVEL", "INFO").upper()
         self.valid_extensions: list[str] = os.getenv(
             "VALID_EXTENSIONS", ".mp4,.mkv,.avi,.mov,.wmv,.mpg,.mpeg"

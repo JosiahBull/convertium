@@ -21,19 +21,11 @@ class TestConfig(unittest.TestCase):
         self.old_env = os.environ.copy()
 
         # Set all Environmental variables
-        os.environ["TIMEZONE"] = "Pacific/Auckland"
         os.environ["LOG_LEVEL"] = "DEBUG"
         os.environ["SCAN_INTERVAL"] = "20"
         os.environ["BASE_PATHS"] = "tests"
         os.environ["VALID_EXTENSIONS"] = ".mov"
         os.environ["FFMPEG_ARGUMENTS"] = "-c:v,libx264,-c:a,copy,-y"
-
-    def test_timezone(self) -> None:
-        """
-        Test that the timezone is valid
-        """
-        cfg = Config()
-        self.assertEqual(cfg.timezone, "Pacific/Auckland")
 
     def test_log_level(self) -> None:
         """

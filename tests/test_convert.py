@@ -30,7 +30,6 @@ class TestConvert(unittest.TestCase):
         self.old_env = os.environ.copy()
 
         # Set all Environmental variables
-        os.environ["TIMEZONE"] = "Pacific/Auckland"
         os.environ["LOG_LEVEL"] = "DEBUG"
         os.environ["SCAN_INTERVAL"] = "20"
         os.environ["BASE_PATHS"] = TEST_FOLDER_NAME

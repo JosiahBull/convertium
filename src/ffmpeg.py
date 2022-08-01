@@ -55,7 +55,7 @@ def convert(path: str, ffmpeg_args: list[str], num_threads: int) -> None:
             # wait for file to finish converting
             logging.debug("waiting for process to complete")
             while process_handle.poll() is None:
-                sleep(5)
+                sleep(healthcheck.HEALTHCHECK_UPDATE_SECONDS)
                 healthcheck.ping()
 
             # check that process succeeded
