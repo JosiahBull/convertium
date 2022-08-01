@@ -45,12 +45,13 @@ class TestFfmpeg(unittest.TestCase):
         """
         Test that the conversion is invalid
         """
-        # Run the conversion
-        ffmpeg.convert(
-            TEST_FOLDER_NAME + "/not_a_file.mov",
-            ["-c:v", "libx264", "-c:a", "copy", "-loglevel", "error", "-y"],
-            4,
-        )
+        # Run the conversion, assert that it raises an exception
+        with self.assertRaises(Exception):
+            ffmpeg.convert(
+                TEST_FOLDER_NAME + "/not_a_file.mov",
+                ["-c:v", "libx264", "-c:a", "copy", "-loglevel", "error", "-y"],
+                4,
+            )
 
         # check for the converted file
         self.assertFalse(os.path.exists(TEST_FOLDER_NAME + "/test_video_1.mp4"))

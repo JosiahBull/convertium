@@ -30,8 +30,6 @@ services:
       - '/media/movies:/movies'
       - '/media/tv:/tv'
     environment:
-      # DEBUG, INFO, WARN, ERROR, CRITICAL
-      - LOG_LEVEL=INFO
       # number of minutes between scans
       - SCAN_INTERVAL=20
       # comma separated list of paths to scan

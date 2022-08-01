@@ -77,7 +77,7 @@ def convert(path: str, ffmpeg_args: list[str], num_threads: int) -> None:
             # move the file
             move(tmp_f.name, base + ".mp4")
         except Exception as e:  # pragma: no cover
-            logging.exception("Error converting {}: {}".format(path, e))
+            raise e
         finally:
             # delete the temporary file, if it still exists
             if os.path.exists(tmp_f.name):

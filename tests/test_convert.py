@@ -3,6 +3,8 @@ import unittest
 import shutil
 import os
 import psycopg2
+import time
+import multiprocessing
 import src.convertium as convertium
 import timeout_decorator
 
@@ -20,6 +22,11 @@ class TestConvert(unittest.TestCase):
             os.mkdir(TEST_FOLDER_NAME)
 
         # Create a file to test with
+        if not os.path.exists(TEST_FOLDER_NAME + "/test_video_1.mov"):
+            shutil.copyfile(
+                "./tests/assets/test_video_1.mov",
+                TEST_FOLDER_NAME + "/test_video_1.mov",
+            )
         if not os.path.exists(TEST_FOLDER_NAME + "/test_video_1.mov"):
             shutil.copyfile(
                 "./tests/assets/test_video_1.mov",
@@ -85,6 +92,45 @@ class TestConvert(unittest.TestCase):
                     (TEST_FOLDER_NAME + "/test_video_1.mov",),
                 )
                 self.assertTrue(curr.rowcount > 0)
+
+    def test_no_conversion_outside_valid_time(self):
+        """
+        Test that the conversion does not occur when processing is disabled
+        """
+
+        # set environment variable to disable processing
+        os.environ["CONVERSION_TIMES"] = "00:00T#0-00:00T#0"
+
+        # run conversion in another process
+        p = multiprocessing.Process(target=convertium.main, args=(False,), daemon=True)
+        p.start()
+
+        # wait 2 seconds
+        time.sleep(2)
+
+        # check that the file was not converted
+        self.assertFalse(os.path.exists(TEST_FOLDER_NAME + "/test_video_1.mp4"))
+
+        # check that the file was not added to the database
+        with psycopg2.connect(
+            user="convertium",
+            password="convertium",
+            host=os.getenv("CONVERTIUM_DB_HOST", "localhost"),
+            port=5432,
+            dbname="convertium_test",
+        ) as conn:
+            with conn.cursor() as curr:
+                curr.execute(
+                    "SELECT * FROM paths WHERE path = %s;",
+                    (TEST_FOLDER_NAME + "/test_video_1.mov",),
+                )
+                self.assertTrue(curr.rowcount == 0)
+
+        # kill the thread
+        p.terminate()
+
+        # return conversion times
+        os.environ["CONVERSION_TIMES"] = "00:00-01:00"
 
     def test_signal_handler(self):
         """

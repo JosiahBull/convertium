@@ -60,7 +60,7 @@ def main(run_once=False) -> None:
     signal.signal(signal.SIGINT, handler)
     signal.signal(signal.SIGTERM, handler)
 
-    # Set up logging
+    # Initialize logger
     logFormatter = logging.Formatter(
         "%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s"
     )
@@ -70,12 +70,11 @@ def main(run_once=False) -> None:
     consoleHandler.setFormatter(logFormatter)
     rootLogger.addHandler(consoleHandler)
 
+    rootLogger.setLevel(logging.DEBUG)
+
     # Load config
     env_vars = config.Config()
-
     sleep_time = env_vars.scan_interval * 60
-
-    rootLogger.setLevel(env_vars.log_level)
 
     # create database
     db = database.Database()
@@ -101,6 +100,8 @@ def main(run_once=False) -> None:
 
             # convert files
             for file in file_list:
+                # NOTE: this could be moved to before the filelist, this would better ensure valid files.
+                # however, we need to stop processing halfway through a file list if processing is no longer enabled.
                 if not timer.processing_enabled():
                     logging.info("Processing is not enabled at this time")
                     while not timer.processing_enabled():
@@ -113,9 +114,13 @@ def main(run_once=False) -> None:
                     continue
 
                 logging.info("Converting {}".format(file))
-                ffmpeg.convert(
-                    file, env_vars.ffmpeg_args.copy(), timer.get_num_threads()
-                )
+                try:
+                    ffmpeg.convert(
+                        file, env_vars.ffmpeg_args.copy(), timer.get_num_threads()
+                    )
+                except Exception as e:
+                    logging.exception("Error converting {}: {}".format(file, e))
+                    continue
                 db.add(file)
                 logging.info("Completed conversion for {}".format(file))
         logging.info("Completed in %.2f seconds" % (time.time() - start_time))

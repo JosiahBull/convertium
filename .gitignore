@@ -10,3 +10,4 @@ test_tmp/
 *.info
 *.xml
 codecov
+.coverage.*
