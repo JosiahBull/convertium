@@ -1,5 +1,4 @@
 import datetime
-from typing import Tuple
 
 
 class TimeAndThreads:
@@ -38,24 +37,24 @@ class TimeAndThreads:
         end_hours, end_minutes = end_time.split(":")
 
         # save config
-        self.start_time = (int(start_hours), int(start_minutes))
-        self.end_time = (int(end_hours), int(end_minutes))
+        self.start_time = datetime.time(int(start_hours), int(start_minutes))
+        self.end_time = datetime.time(int(end_hours), int(end_minutes))
         self.start_threads = int(start_threads)
         self.end_threads = int(end_threads)
 
-    def get_time(self) -> Tuple[int, int]:
-        """
-        Get the current time, and return it in a 2-int tuple (hours, minutes)
-        """
-        now = datetime.datetime.now()
-        return (int(now.strftime("%H")), int(now.strftime("%M")))
+    def is_time_between(self, check_time=None) -> bool:
+        check_time = check_time or datetime.datetime.now().time()
+        if self.start_time < self.end_time:
+            return check_time >= self.start_time and check_time <= self.end_time
+        else:  # crosses midnight
+            return check_time >= self.start_time or check_time <= self.end_time
 
-    def get_num_threads(self) -> int:
+    def get_num_threads(self, time=None) -> int:
         """
         Get the number of threads to use, based on the current time. Will return -1 if infinite threads are allowed.
         """
-        time = self.get_time()
-        if time >= self.start_time and time <= self.end_time:
+
+        if self.is_time_between(time):
             return self.start_threads
         else:
             return self.end_threads

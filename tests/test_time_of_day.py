@@ -121,6 +121,23 @@ class TestTimeAndThreads(unittest.TestCase):
         self.assertEqual(num_threads, -1)
         self.assertTrue(time_and_threads.processing_enabled())
 
+    def test_start_end_on_different_day(self):
+        """
+        This function will test that the number of threads is correct when the start and end time are on different days
+        """
+
+        # construct the config string
+        config = "23:00T#0-02:00T#0"
+
+        # create the TimeAndThreads object
+        time_and_threads = TimeAndThreads(config)
+
+        # get the number of threads
+        num_threads = time_and_threads.get_num_threads()
+
+        # check that the number of threads is between the start and end time
+        self.assertEqual(num_threads, 0)
+
     def test_failure_cases(self):
         """
         This function will validate that ValueErrors are returned when incorrect configurations are passed
