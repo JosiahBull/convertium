@@ -74,7 +74,7 @@ def main(run_once=False) -> None:
 
     # Load config
     env_vars = config.Config()
-    sleep_time = env_vars.scan_interval * 60
+    sleep_time = env_vars.scan_interval
 
     # create database
     db = database.Database()
@@ -124,17 +124,15 @@ def main(run_once=False) -> None:
                 db.add(file)
                 logging.info("Completed conversion for {}".format(file))
         logging.info("Completed in %.2f seconds" % (time.time() - start_time))
-        logging.info(
-            "Sleeping for {} minutes before scanning again".format(int(sleep_time / 60))
-        )
+        logging.info("Sleeping for {} seconds before scanning again".format(sleep_time))
 
         if run_once:
             break
 
         # wait for sleep_time but ping healthcheck every now and then
-        for _ in range(int(sleep_time / 5)):
+        for _ in range(sleep_time // healthcheck.HEALTHCHECK_UPDATE_SECONDS):
             healthcheck.ping()
-            sleep(healthcheck.HEALTHCHECK_UPDATE_TIME)
+            sleep(healthcheck.HEALTHCHECK_UPDATE_SECONDS)
 
 
 global process_handle
