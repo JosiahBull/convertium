@@ -8,8 +8,8 @@ services:
       - '/media/movies:/movies'
       - '/media/tv:/tv'
     environment:
-      # number of minutes between scans
-      - SCAN_INTERVAL=20
+      # number of seconds between scans
+      - SCAN_INTERVAL=900 # 15 min
       # comma separated list of paths to scan
       - BASE_PATHS=/movies,/tv
       # comma separated list of extensions to attempt conversions on

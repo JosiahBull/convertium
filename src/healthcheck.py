@@ -2,7 +2,7 @@ import time
 import logging
 from typing import Final
 
-HEALTHCHECK_FAILURE_THRESHHOLD_MINUTES: Final[int] = 3
+HEALTHCHECK_FAILURE_THRESHHOLD_SECONDS: Final[int] = 180
 HEALTHCHECK_FILE_NAME: Final[str] = "healthcheck"
 
 # How long to wait between healthcheck pings
@@ -33,7 +33,7 @@ def is_timestamp_valid(timestamp: float) -> bool:
     """
     Check if a timestamp is valid
     """
-    return time.time() - timestamp < HEALTHCHECK_FAILURE_THRESHHOLD_MINUTES * 60
+    return time.time() - timestamp < HEALTHCHECK_FAILURE_THRESHHOLD_SECONDS
 
 
 def healthcheck() -> None:
